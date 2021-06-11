@@ -265,46 +265,37 @@ def get_movie(id):
 
         # TODO: Get Comments
         # Implement the required pipeline.
-        pipeline = [
-            {
-                "$match": {
-                    "_id": ObjectId(id)
+        match_stage = {
+            "$match": {
+                "_id": ObjectId(id)
                 }
-            }, 
-            {
-                "$lookup": {
-                    "from": "comments", 
-                    "let": {
-                        "id": "$_id"
-                    }, 
-                    "pipeline": [
-                        {
-                            "$match": {
-                                "$expr": {
-                                    "$eq": [
-                                        "$movie_id", "$$id"
-                                    ]
+        }
+        lookup_stage = {"$lookup": 
+                            {"from": "comments", 
+                                "let": {
+                                    "id": "$_id"
+                                },
+                                "pipeline": [
+                                    {
+                                    "$match": {
+                                        "$expr": {
+                                            "$eq": [
+                                                "$movie_id", "$$id"
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "$sort": {"date":DESCENDING}
                                 }
-                            }
-                        }
-                    ], 
-                    "as": "comments"
-                }
-            }, {
-                "$sort": {
-                    "comments.date": 1
-                }
-            }
+                                ],"as": "comments"}
+        }
+        final_pipeline = [
+            match_stage,
+            lookup_stage
         ]
-        # pipeline = [
-        #     {
-        #         "$match": {
-        #             "_id": ObjectId(id)
-        #         }
-        #     }
-        # ]
 
-        movie = db.movies.aggregate(pipeline).next()
+        movie = db.movies.aggregate(final_pipeline).next()
         return movie
 
     # TODO: Error Handling
