@@ -351,9 +351,45 @@ def add_comment(movie_id, user, comment, date):
 
     Name and email must be retrieved from the "user" object.
     """
+    """
+    match_stage = {
+        "$match": {
+            "_id": ObjectId(user)
+        }
+    }
+    project_stage = {
+        "name": 1,
+        "email": 1,
+        "_id": 0
+    }
+    pipeline = [
+        match_stage,
+        project_stage
+    ]
+    name_email = db.users.aggregate(pipeline)
+    """
+    
+
+
+    # name_email = db.users.find_one({"_id":user}) # {"name":"foo","email":"bar@k.com"}
+    # print(name_email["name"])
+    # print(name_email["email"])
+    # name = name_email["name"]
+    # email = name_email["email"]
+    u_j = user.to_json()
+    name = u_j["name"]
+    email = u_j["email"]
+    print(name)
+    print(email)
+
+
     # TODO: Create/Update Comments
     # Construct the comment document to be inserted into MongoDB.
-    comment_doc = { "some_field": "some_value" }
+    comment_doc = { "name": user.name, 
+                    "email": user.email,
+                    "movie_id":movie_id,
+                    "comment": comment,
+                    "date":date }
     return db.comments.insert_one(comment_doc)
 
 
