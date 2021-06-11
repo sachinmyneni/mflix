@@ -270,8 +270,39 @@ def get_movie(id):
                 "$match": {
                     "_id": ObjectId(id)
                 }
+            }, 
+            {
+                "$lookup": {
+                    "from": "comments", 
+                    "let": {
+                        "id": "$_id"
+                    }, 
+                    "pipeline": [
+                        {
+                            "$match": {
+                                "$expr": {
+                                    "$eq": [
+                                        "$movie_id", "$$id"
+                                    ]
+                                }
+                            }
+                        }
+                    ], 
+                    "as": "comments"
+                }
+            }, {
+                "$sort": {
+                    "comments.date": 1
+                }
             }
         ]
+        # pipeline = [
+        #     {
+        #         "$match": {
+        #             "_id": ObjectId(id)
+        #         }
+        #     }
+        # ]
 
         movie = db.movies.aggregate(pipeline).next()
         return movie
