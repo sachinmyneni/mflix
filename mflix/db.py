@@ -58,6 +58,13 @@ def get_db():
 # Use LocalProxy to read the global db instance with just `db`
 db = LocalProxy(get_db)
 
+def create_db_user(username,password,accessLevel):
+    try:
+        db.command("createUser",username,pwd=password,roles=[{"role":accessLevel,"db":"sample_mflix"}])
+    except Exception as e:
+        print(f"Exception while creating DB user: {e}")
+        return False
+    return True
 
 def get_movies_by_country(countries):
     """
@@ -315,8 +322,8 @@ def get_movie(id):
         return None
 
     except Exception as e:
-        return {}
-
+        print(e)
+        return None
 
 def get_all_genres():
     """

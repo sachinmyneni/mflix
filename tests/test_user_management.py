@@ -1,6 +1,6 @@
 import pytest
 from mflix.db import delete_user, get_user_session, get_user, add_user, \
-    login_user, logout_user
+    login_user, logout_user, create_db_user
 
 test_user = {
     'name': 'Magical Mr. Mistoffelees',
@@ -52,3 +52,8 @@ def test_logout(client):
     assert result == {'success': True}
     session_result = get_user_session(test_user.get('email'))
     assert session_result is None
+
+@pytest.mark.user_management
+def test_create_db_user(client):
+    res = create_db_user("mflixAppUser","mflixAppPwd","readWrite")
+    assert res is True
