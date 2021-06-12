@@ -50,6 +50,7 @@ def get_db():
         maxPoolSize = 50,
         # TODO: Timeouts
         # Set the write timeout limit to 2500 milliseconds.
+        wtimeout = 2500,
         )[MFLIX_DB_NAME]
     return db
 
